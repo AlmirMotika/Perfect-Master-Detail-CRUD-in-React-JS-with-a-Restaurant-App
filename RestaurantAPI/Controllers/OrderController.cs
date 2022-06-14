@@ -74,8 +74,12 @@ namespace RestaurantAPI.Controllers
 
         // POST api/<Order>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public async Task<ActionResult<OrderMaster>> PostOrderMaster(OrderMaster orderMaster)
         {
+            _context.OrderMasters.Add(orderMaster);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction("GetOrderMaster", new { id = orderMaster.OrderMasterId }, orderMaster);
         }
 
         // PUT api/<Order>/5
@@ -125,8 +129,17 @@ namespace RestaurantAPI.Controllers
 
         // DELETE api/<Order>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public async Task<IActionResult> DeleteOrderMaster(long id)
         {
+            var orderMaster = await _context.OrderMasters.FindAsync(id);
+            if (orderMaster == null)
+            {
+                return NotFound();
+            }
+            _context.OrderMasters.Remove(orderMaster);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
         }
         private bool OrderMasterExists(long id)
         {
