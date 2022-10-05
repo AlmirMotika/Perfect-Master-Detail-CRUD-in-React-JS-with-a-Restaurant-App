@@ -1,10 +1,11 @@
-import React,{useState} from 'react'
+import React,{useState,useEffect} from 'react'
 import Form from "../../layout/Form";
 import {ButtonGroup, Grid, InputAdornment,makeStyles,Button as MuiButton} from "@material-ui/core";
 import {Input,Select,Button} from "../../controls";
 import ReplayIcon from '@material-ui/icons/Replay';
 import RestaurantMenuIcon from '@material-ui/icons/RestaurantMenu';
 import ReorderIcon from '@material-ui/icons/Reorder';
+import {createAPIEndpoint,ENDPOINTS} from "../../api";
 const pMethods=[
   {id:'none',title:'Select'},
   {id:'Cash',title:'Cash'},
@@ -32,9 +33,26 @@ const useStyles=makeStyles(theme=>({
   }
 
 }))
+
 export default function OrderForm(props) {
   const {values,errors,handleInputChange}=props;
   const classes=useStyles();
+
+  const [customerList,setCustomerList]=useState([]);
+
+  useEffect(()=>{
+    createAPIEndpoint(ENDPOINTS.CUSTOMER).fetchAll()
+    .then(res=>{
+      let customerList=res.data.map(item=>({
+        id:item.customerId,
+        title:item.customerName
+      }));
+      customerList=[{id:0,title:'Select'}].concat(customerList);
+      setCustomerList(customerList);
+
+    })
+    .catch(err=>console.log(err))
+  },[])
   return (
     <Form>
       <Grid container>
@@ -55,14 +73,7 @@ export default function OrderForm(props) {
         name="customerId"
         value={values.customerId}
         onChange={handleInputChange}  
-        options={[
-          {id:0,title:'Select'},
-          {id:1,title:'Customer 1'},
-          {id:2,title:'Customer 2'},
-          {id:3,title:'Customer 3'},
-          {id:4,title:'Customer 4'},
-
-        ]}/>       
+        options={customerList}/>       
 
         </Grid>
         <Grid items xs={6}>
