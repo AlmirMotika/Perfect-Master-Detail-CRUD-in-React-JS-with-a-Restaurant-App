@@ -37,7 +37,8 @@ const useStyles=makeStyles(theme=>({
 }))
 
 export default function SearchFoodItems(props) {
-    const {addFoodItem}=props;
+    const {values,setValues}=props;
+    let orderedFoodItems=values.orderDetails;
     const [foodItems,setFoodItems]=useState([]);
     const [searchList,setSearchList]=useState([]);
     const [searchKey,setSearchKey]=useState('');
@@ -56,9 +57,24 @@ export default function SearchFoodItems(props) {
         let x=[...foodItems];
         x=x.filter(y=>{
             return y.foodItemName.toLowerCase().includes(searchKey.toLocaleLowerCase())
+            && orderedFoodItems.every(item=>item.foodItemId!=y.foodItemId)
         });
         setSearchList(x);
-    },[searchKey])
+    }, [searchKey, orderedFoodItems])
+    const addFoodItem=foodItem=>{
+        let x={
+          orderMasterId:values.orderMasterId,
+          orderDetailId:0,
+          foodItemId:foodItem.foodItemId,
+          quantity:1,
+          foodItemPrice:foodItem.price,
+          foodItemName:foodItem.foodItemName
+        }
+        setValues({
+          ...values,
+          orderDetails:[...values.orderDetails,x]
+        })
+      }
   return (
     <>
     <Paper className={classes.searchPaper}>
