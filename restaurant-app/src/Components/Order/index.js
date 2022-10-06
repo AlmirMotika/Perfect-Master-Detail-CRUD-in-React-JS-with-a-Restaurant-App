@@ -12,7 +12,7 @@ const getFreshModelObject=()=>({
   customerId:0,
   pMethod:'none',
   gTotal:0,
-  DeletedOrderItemsIds:'',
+  deletedOrderItemIds:'',
   orderDetails:[]
 
 })
@@ -33,7 +33,7 @@ export default function Order() {
     <Grid container spacing={2}>
       <Grid item xs={12}>
       <OrderForm
-    {...{values,setValues,errors,setErrors,handleInputChange}}
+    {...{values,setValues,errors,setErrors,handleInputChange,resetFormControls}}
     />
       </Grid>
       <Grid item xs={6}>
