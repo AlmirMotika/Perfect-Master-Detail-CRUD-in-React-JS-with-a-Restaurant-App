@@ -36,7 +36,7 @@ const useStyles=makeStyles(theme=>({
 }))
 
 export default function OrderForm(props) {
-  const {values,setValues,errors,handleInputChange}=props;
+  const {values,setValues,errors,setErrors,handleInputChange}=props;
   const classes=useStyles();
 
   const [customerList,setCustomerList]=useState([]);
@@ -64,8 +64,23 @@ setValues({
   gTotal:roundTo2DecimalPoint(gTotal)
 })
   },[JSON.stringify(values.orderDetails)]);
+
+  const validateForm=()=>{
+    let temp={};
+    temp.customerId=values.customerId != 0?"":"This field is required";
+    temp.pMethod=values.pMethod!="none"?"":"This field is required";
+    temp.orderDetails=values.orderDetails.length !=0?"":"This field is required";
+    setErrors({...temp});
+    return Object.values(temp).every(x=>x==="");
+  }
+  const submitOrder=e=>{
+    e.preventDefault();
+    if(validateForm()){
+
+    }
+  }
   return (
-    <Form>
+    <Form onSubmit={submitOrder}>
       <Grid container>
         <Grid items xs={6}>
           <Input
@@ -84,7 +99,9 @@ setValues({
         name="customerId"
         value={values.customerId}
         onChange={handleInputChange}  
-        options={customerList}/>       
+        options={customerList}
+        error={errors.customerId}
+        />       
 
         </Grid>
         <Grid items xs={6}>
@@ -94,6 +111,7 @@ setValues({
         value={values.pMethod}
         onChange={handleInputChange}
         options={pMethods}
+        error={errors.pMethod}
         
         />
           <Input 
