@@ -7,6 +7,8 @@ import RestaurantMenuIcon from '@material-ui/icons/RestaurantMenu';
 import ReorderIcon from '@material-ui/icons/Reorder';
 import {createAPIEndpoint,ENDPOINTS} from "../../api";
 import { roundTo2DecimalPoint } from '../../utils';
+import Popup from '../../layout/Popup';
+import OrderList from './OrderList';
 const pMethods=[
   {id:'none',title:'Select'},
   {id:'Cash',title:'Cash'},
@@ -40,7 +42,7 @@ export default function OrderForm(props) {
   const classes=useStyles();
 
   const [customerList,setCustomerList]=useState([]);
-
+  const [orderListVisibility,setOrderListVisibility]=useState(false);
   useEffect(()=>{
     createAPIEndpoint(ENDPOINTS.CUSTOMER).fetchAll()
     .then(res=>{
@@ -86,7 +88,11 @@ setValues({
     }
 
   }
+  const openListOfOrders=()=>{
+    setOrderListVisibility(true);
+  }
   return (
+    <>
     <Form onSubmit={submitOrder}>
       <Grid container>
         <Grid items xs={6}>
@@ -145,10 +151,19 @@ setValues({
           </ButtonGroup>
           <Button
           size="large"
+          onClick={openListOfOrders}
           startIcon={<ReorderIcon/>}>Orders</Button>
           
         </Grid>
       </Grid>
     </Form>
+    <Popup
+    title="List of Orders"
+    openPopup={orderListVisibility}
+    setOpenPopup={setOrderListVisibility}>
+      <OrderList/>
+    </Popup>
+
+    </>
   )
 }
