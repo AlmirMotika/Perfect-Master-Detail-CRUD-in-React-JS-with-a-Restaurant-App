@@ -43,6 +43,7 @@ export default function OrderForm(props) {
 
   const [customerList,setCustomerList]=useState([]);
   const [orderListVisibility,setOrderListVisibility]=useState(false);
+  const [orderId,setOrderId]=useState(0);
   useEffect(()=>{
     createAPIEndpoint(ENDPOINTS.CUSTOMER).fetchAll()
     .then(res=>{
@@ -66,6 +67,19 @@ setValues({
   gTotal:roundTo2DecimalPoint(gTotal)
 })
   },[JSON.stringify(values.orderDetails)]);
+  useEffect(()=>{
+    if(orderId==0){
+      resetFormControls()
+    }
+    else{
+      createAPIEndpoint(ENDPOINTS.ORDER).fetchById(orderId)
+      .then(res=>{
+        setValues(res.data);
+        setErrors({});
+      })
+      .catch(err=>console.log(err))
+    }
+  },[orderId])
 
   const validateForm=()=>{
     let temp={};
@@ -75,16 +89,29 @@ setValues({
     setErrors({...temp});
     return Object.values(temp).every(x=>x==="");
   }
+  const resetForm=()=>{
+    resetFormControls();
+    setOrderId(0);
+  }
   const submitOrder = e => {
     e.preventDefault();
     if (validateForm()) {
+      if(values.orderMasterId==0){
             createAPIEndpoint(ENDPOINTS.ORDER).create(values)
                 .then(res => {
                     resetFormControls();
                     
                 })
                 .catch(err => console.log(err));
-        
+      }
+      else{
+        createAPIEndpoint(ENDPOINTS.ORDER).update(values.orderMasterId,values)
+                .then(res => {
+                  setOrderId(0);
+                    
+                })
+                .catch(err => console.log(err));
+      }  
     }
 
   }
@@ -161,7 +188,10 @@ setValues({
     title="List of Orders"
     openPopup={orderListVisibility}
     setOpenPopup={setOrderListVisibility}>
-      <OrderList/>
+      <OrderList
+      {...{setOrderId,setOrderListVisibility}}
+      />
+      
     </Popup>
 
     </>
