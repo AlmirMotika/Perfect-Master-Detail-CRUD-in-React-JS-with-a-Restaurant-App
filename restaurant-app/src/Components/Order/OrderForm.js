@@ -195,7 +195,7 @@ setValues({
     openPopup={orderListVisibility}
     setOpenPopup={setOrderListVisibility}>
       <OrderList
-      {...{setOrderId,setOrderListVisibility}}
+      {...{setOrderId,setOrderListVisibility,resetFormControls,setNotify}}
       />
       
     </Popup>
