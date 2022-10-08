@@ -9,6 +9,7 @@ import {createAPIEndpoint,ENDPOINTS} from "../../api";
 import { roundTo2DecimalPoint } from '../../utils';
 import Popup from '../../layout/Popup';
 import OrderList from './OrderList';
+import Notification from '../../layout/Notification';
 const pMethods=[
   {id:'none',title:'Select'},
   {id:'Cash',title:'Cash'},
@@ -44,6 +45,7 @@ export default function OrderForm(props) {
   const [customerList,setCustomerList]=useState([]);
   const [orderListVisibility,setOrderListVisibility]=useState(false);
   const [orderId,setOrderId]=useState(0);
+  const [notify,setNotify]=useState({isOpen:false});
   useEffect(()=>{
     createAPIEndpoint(ENDPOINTS.CUSTOMER).fetchAll()
     .then(res=>{
@@ -99,7 +101,9 @@ setValues({
       if(values.orderMasterId==0){
             createAPIEndpoint(ENDPOINTS.ORDER).create(values)
                 .then(res => {
+                  setNotify({isOpen:true,message:'The order is updated'});
                     resetFormControls();
+                    
                     
                 })
                 .catch(err => console.log(err));
@@ -108,6 +112,7 @@ setValues({
         createAPIEndpoint(ENDPOINTS.ORDER).update(values.orderMasterId,values)
                 .then(res => {
                   setOrderId(0);
+                  setNotify({isOpen:true,message:'The order is updated'});
                     
                 })
                 .catch(err => console.log(err));
@@ -172,6 +177,7 @@ setValues({
             type="submit">Submit</MuiButton>
             <MuiButton
             size="small"
+            onClick={resetForm}
             startIcon={<ReplayIcon/>}
             ></MuiButton>
 
@@ -193,7 +199,8 @@ setValues({
       />
       
     </Popup>
-
+<Notification
+{...{notify,setNotify}}/>
     </>
   )
 }
